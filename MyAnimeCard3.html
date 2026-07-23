@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anime Profile & Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #121212;
+      --color-navbar: #1C1C1C;
+      --color-card: #2C2C2C;
+      --color-button: #6C4AB6;
+      --color-hover: #845EC2;
+      --color-text: #FFFFFF;
+      --color-text-sub: #B3B3B3;
+      --color-border: #404040;
+      --color-accent: #9B5DE5;
+
+      --spacing-xs: 8px;
+      --spacing-sm: 16px;
+      --spacing-md: 32px;
+      --spacing-lg: 48px;
+      --spacing-xl: 64px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      background-color: var(--color-navbar);
+      padding: var(--spacing-sm) var(--spacing-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--color-text);
+      text-decoration: none;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background-color: var(--color-card);
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+    }
+
+    .search-box {
+      display: flex;
+      gap: var(--spacing-xs);
+    }
+
+    .search-input {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+    }
+
+    .nav-right {
+      display: flex;
+      gap: var(--spacing-xs);
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--color-text-sub);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      color: var(--color-text);
+      background-color: var(--color-hover);
+    }
+
+    .nav-btn.active {
+      color: var(--color-text);
+      background-color: var(--color-button);
+      border: 1px solid var(--color-accent);
+    }
+
+    .btn {
+      background-color: var(--color-button);
+      color: var(--color-text);
+      border: none;
+      border-radius: 8px;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--color-hover);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: var(--spacing-lg) var(--spacing-xl);
+      flex: 1;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    h1.page-title {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+    }
+
+    h2.section-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    /* Profile Panel */
+    .profile-panel {
+      background-color: var(--color-navbar);
+      border-radius: 16px;
+      padding: var(--spacing-md);
+      display: flex;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      border: 1px solid var(--color-border);
+    }
+
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      background-color: var(--color-card);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-sub);
+      font-weight: 700;
+      border: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+
+    .profile-info {
+      display: flex;
+      gap: var(--spacing-lg);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .info-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+
+    .info-item {
+      font-size: 14px;
+      color: var(--color-text-sub);
+    }
+
+    .info-item span {
+      color: var(--color-text);
+      font-weight: 700;
+    }
+
+    /* Sections */
+    .anime-section {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .card-grid-preview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) auto;
+      gap: var(--spacing-sm);
+      align-items: stretch;
+    }
+
+    .card-grid-full {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--spacing-sm);
+    }
+
+    /* Anime Cards (12px Corner Radius) */
+    .anime-card {
+      background-color: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .anime-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-accent);
+    }
+
+    .anime-card-cover {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      background-color: #1c1c1c;
+      overflow: hidden;
+    }
+
+    .anime-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .anime-card-rating {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(18, 18, 18, 0.85);
+      color: #FFD700;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+    }
+
+    .anime-card-content {
+      padding: var(--spacing-sm);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+      flex-grow: 1;
+    }
+
+    .anime-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .anime-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--color-text-sub);
+    }
+
+    .anime-card-tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    .anime-tag {
+      font-size: 11px;
+      background-color: var(--color-navbar);
+      color: var(--color-text-sub);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--color-border);
+    }
+
+    .see-all-btn {
+      width: 80px;
+      background-color: var(--color-navbar);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      color: var(--color-text-sub);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .see-all-btn:hover {
+      background-color: var(--color-card);
+      color: var(--color-text);
+      border-color: var(--color-accent);
+    }
+
+    /* Footer */
+    footer {
+      background-color: var(--color-navbar);
+      border-top: 1px solid var(--color-border);
+      padding: var(--spacing-md) var(--spacing-sm);
+      text-align: center;
+      color: var(--color-text-sub);
+      font-size: 14px;
+      margin-top: auto;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm);
+      }
+
+      .nav-left {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .search-box {
+        flex: 1;
+      }
+
+      .nav-right {
+        width: 100%;
+        justify-content: space-around;
+      }
+
+      .nav-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      .container {
+        padding: var(--spacing-sm);
+      }
+
+      .profile-panel {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .profile-info {
+        justify-content: center;
+        gap: var(--spacing-sm);
+      }
+
+      .card-grid-preview {
+        grid-template-columns: 1fr;
+      }
+
+      .see-all-btn {
+        width: 100%;
+        height: 48px;
+      }
+
+      .card-grid-full {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+
+      .anime-card-cover {
+        height: 160px;
+      }
+
+      h1.page-title {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="#" class="logo" onclick="switchPage('mypage')">LOGO</a>
+      <div class="search-box">
+        <input type="text" class="search-input" placeholder="SEARCH">
+        <button class="btn">btn</button>
+      </div>
+    </div>
+    <nav class="nav-right">
+      <button class="nav-btn active" id="nav-mypage" onclick="switchPage('mypage')">My Page</button>
+      <button class="nav-btn" id="nav-favorite" onclick="switchPage('favorite')">お気に入り</button>
+      <button class="nav-btn" id="nav-seen" onclick="switchPage('seen')">見たアニメ</button>
+      <button class="nav-btn" id="nav-recommend" onclick="switchPage('recommend')">おすすめ</button>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- My Page -->
+    <div id="page-mypage" class="page active">
+      <section class="profile-panel">
+        <div class="profile-pic">PROFILE PIC</div>
+        <div class="profile-info">
+          <div class="info-group">
+            <div class="info-item">(NAME)</div>
+            <div class="info-item">(GENDER)</div>
+            <div class="info-item">(BIRTHDAY)</div>
+            <div class="info-item">(LOCATION)</div>
+          </div>
+          <div class="info-group">
+            <div class="info-item">(FAVORITE : ##)</div>
+            <div class="info-item">(SEEN : ##)</div>
+            <div class="info-item">(RECOMMENDATION : ##)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Favorite -->
+      <section class="anime-section">
+        <h2 class="section-title">お気に入り</h2>
+        <div class="card-grid-preview" id="preview-favorite">
+          <button class="see-all-btn" onclick="switchPage('favorite')">SEE ALL</button>
+        </div>
+      </section>
+
+      <!-- Seen -->
+      <section class="anime-section">
+        <h2 class="section-title">見たアニメ</h2>
+        <div class="card-grid-preview" id="preview-seen">
+          <button class="see-all-btn" onclick="switchPage('seen')">SEE ALL</button>
+        </div>
+      </section>
+
+      <!-- Recommendations -->
+      <section class="anime-section">
+        <h2 class="section-title">おすすめ</h2>
+        <div class="card-grid-preview" id="preview-recommend">
+          <button class="see-all-btn" onclick="switchPage('recommend')">SEE ALL</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Full Pages -->
+    <div id="page-favorite" class="page">
+      <h1 class="page-title">お気に入り</h1>
+      <div class="card-grid-full" id="grid-favorite"></div>
+    </div>
+
+    <div id="page-seen" class="page">
+      <h1 class="page-title">見たアニメ</h1>
+      <div class="card-grid-full" id="grid-seen"></div>
+    </div>
+
+    <div id="page-recommend" class="page">
+      <h1 class="page-title">おすすめ</h1>
+      <div class="card-grid-full" id="grid-recommend"></div>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>(Copyright &amp; Links)</p>
+  </footer>
+
+  <script>
+    // ================================================================
+    // EDIT YOUR ANIME DATA HERE! / ここでアニメデータを編集できます！
+    // ================================================================
+    const animeData = {
+      favorite: [
+        { title: "進撃の巨人", year: "2013", rating: "9.1", genre: "Action", image: "https://via.placeholder.com/300x400/1C1C1C/845EC2?text=AttackOnTitan" },
+        { title: "呪術廻戦", year: "2020", rating: "8.6", genre: "Action", image: "https://via.placeholder.com/300x400/1C1C1C/845EC2?text=JujutsuKaisen" },
+        { title: "鬼滅の刃", year: "2019", rating: "8.7", genre: "Action", image: "https://via.placeholder.com/300x400/1C1C1C/845EC2?text=DemonSlayer" },
+        { title: "SPY×FAMILY", year: "2022", rating: "8.5", genre: "Comedy", image: "https://via.placeholder.com/300x400/1C1C1C/845EC2?text=SpyFamily" }
+      ],
+      seen: [
+        { title: "シュタインズ・ゲート", year: "2011", rating: "9.0", genre: "Sci-Fi", image: "https://via.placeholder.com/300x400/1C1C1C/845EC2?text=SteinsGate" },
+        { title: "鋼の錬金術師", year: "2009", rating: "9.1", genre: "Adventure", image: "https://via.placeholder.com/300x400/1C1C1C/845EC2?text=Fullmetal" },
+        { title: "デスノート", year: "2006", rating: "8.9", genre: "Mystery", image: "https://via.placeholder.com/300x400/1C1C1C/845EC2?text=DeathNote" }
+      ],
+      recommend: [
+        { title: "葬送のフリーレン", year: "2023", rating: "9.3", genre: "Fantasy", image: "https://via.placeholder.com/300x400/1C1C1C/845EC2?text=Frieren" },
+        { title: "ぼっち・ざ・ろっく！", year: "2022", rating: "8.8", genre: "Music", image: "https://via.placeholder.com/300x400/1C1C1C/845EC2?text=Bocchi" },
+        { title: "チェンソーマン", year: "2022", rating: "8.5", genre: "Action", image: "https://via.placeholder.com/300x400/1C1C1C/845EC2?text=ChainsawMan" }
+      ]
+    };
+
+    // Creates the HTML structure for a card
+    function createAnimeCard(anime) {
+      return `
+        <div class="anime-card">
+          <div class="anime-card-cover">
+            <img src="${anime.image}" alt="${anime.title}" class="anime-card-img">
+            <div class="anime-card-rating">★ ${anime.rating}</div>
+          </div>
+          <div class="anime-card-content">
+            <div class="anime-card-title">${anime.title}</div>
+            <div class="anime-card-meta">
+              <span>${anime.year}</span>
+              <span>TV</span>
+            </div>
+            <div class="anime-card-tags">
+              <span class="anime-tag">${anime.genre}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Displays the first 3 items in the preview grids
+    function renderPreviews(categoryKey, containerId) {
+      const container = document.getElementById(containerId);
+      const btn = container.querySelector('.see-all-btn');
+      const list = animeData[categoryKey] || [];
+
+      // Display up to 3 cards
+      list.slice(0, 3).forEach(anime => {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = createAnimeCard(anime);
+        container.insertBefore(wrapper.firstElementChild, btn);
+      });
+    }
+
+    // Displays all items in the full grids
+    function renderFullGrids(categoryKey, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      const list = animeData[categoryKey] || [];
+
+      list.forEach(anime => {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = createAnimeCard(anime);
+        container.appendChild(wrapper.firstElementChild);
+      });
+    }
+
+    // Load data onto the page
+    renderPreviews('favorite', 'preview-favorite');
+    renderPreviews('seen', 'preview-seen');
+    renderPreviews('recommend', 'preview-recommend');
+
+    renderFullGrids('favorite', 'grid-favorite');
+    renderFullGrids('seen', 'grid-seen');
+    renderFullGrids('recommend', 'grid-recommend');
+
+    // Tab switcher
+    function switchPage(pageName) {
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(`page-${pageName}`).classList.add('active');
+      
+      const activeNav = document.getElementById(`nav-${pageName}`);
+      if (activeNav) {
+        activeNav.classList.add('active');
+      }
+
+      window.scrollTo(0, 0);
+    }
+  </script>
+</body>
+</html>
